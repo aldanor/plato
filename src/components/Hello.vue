@@ -66,6 +66,7 @@
           <div slot="right">{{statusText}}</div>
           <right></right>
         </q-card-title>
+        <q-progress :percentage="progress" color="primary" animate />
         <q-card-separator/>
         <q-card-actions align="center">
           <q-btn big flat class="big-button" :disabled="!canRewind"
@@ -104,7 +105,8 @@ import {
   QCardTitle,
   QCardMain,
   QCardSeparator,
-  QCardActions
+  QCardActions,
+  QProgress
 } from 'quasar'
 
 const Action = {
@@ -133,7 +135,8 @@ export default {
     QCardTitle,
     QCardMain,
     QCardSeparator,
-    QCardActions
+    QCardActions,
+    QProgress
   },
 
   data () {
@@ -191,6 +194,14 @@ export default {
       return this.pos === this.numWords
     },
 
+    numDone () {
+      return this.isDone ? this.numWords : this.pos + 1
+    },
+
+    progress () {
+      return this.pos * 100.0 / this.numWords
+    },
+
     animateStyle () {
       const styles = {
         rewind: 'fadeOutRight',
@@ -202,8 +213,7 @@ export default {
     },
 
     statusText () {
-      const pos = this.isDone ? this.numWords : this.pos + 1
-      return `${pos} of ${this.numWords}`
+      return `${this.numDone} of ${this.numWords}`
     }
   }
 }
