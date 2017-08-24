@@ -87,8 +87,9 @@
       style="padding-top: 0;" v-show="canRewind">
       <div style="width: 400px; max-width: 90vw;">
         <q-list link inset-separator>
+          <q-list-header>Recent Words</q-list-header>
           <template v-for="(r, i) in lastRatings">
-            <q-item>
+            <q-item @click="jumpBack(r.num - 1)">
               <q-item-side left
                 :icon="iconForRating(r.rating)"
                 :color="colorForRating(r.rating)" />
@@ -196,7 +197,7 @@ export default {
 
   methods: {
     onRewind () {
-      this.advance(Action.REWIND)
+      this.advance(Action.REWIND, this.pos - 1)
     },
 
     onAccept () {
@@ -211,10 +212,15 @@ export default {
       this.advance(Action.IGNORE)
     },
 
-    advance (action) {
+    jumpBack (pos) {
+      this.advance(Action.REWIND, pos)
+    },
+
+    advance (action, pos = null) {
+      pos = pos === null ? this.pos + 1 : pos
       this.action = action
       if (action === Action.REWIND) {
-        this.pos -= 1
+        this.pos = pos
       }
       else {
         const rating = {
@@ -223,7 +229,6 @@ export default {
           ignore: Rating.NONE
         }[action]
         this.ratings[this.pos] = rating
-        console.log(this.ratings)
         this.pos += 1
       }
       this.show = !this.show
@@ -240,8 +245,7 @@ export default {
     },
 
     classForRating (rating) {
-      return rating === Rating.NONE ? 'text-faded light-paragraph'
-        : ''
+      return rating === Rating.NONE ? 'text-faded' : ''
     }
   },
 
