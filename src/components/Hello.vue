@@ -4,7 +4,7 @@
     view="lHh Lpr fff"
     :left-class="{'bg-grey-2': true}"
   >
-    <q-toolbar slot="header" class="glossy">
+    <q-toolbar slot="header">
       <q-btn
         flat
         @click="$refs.layout.toggleLeft()"
@@ -13,18 +13,11 @@
       </q-btn>
 
       <q-toolbar-title>
-        Quasar App
-        <div slot="subtitle">Running on Quasar v{{$q.version}}</div>
+        NLP Annotate
       </q-toolbar-title>
     </q-toolbar>
 
     <div slot="left">
-      <!--
-        Use <q-side-link> component
-        instead of <q-item> for
-        internal vue-router navigation
-      -->
-
       <q-list no-border link inset-delimiter>
         <q-list-header>Essential Links</q-list-header>
         <q-item @click="launch('http://quasar-framework.org')">
@@ -46,24 +39,56 @@
       </q-list>
     </div>
 
-    <!--
-      Replace following <div> with
-      <router-view /> component
-      if using subRoutes
-    -->
-    <div class="layout-padding logo-container non-selectable no-pointer-events">
-      <div class="logo" :style="position">
-        <img src="~assets/quasar-logo-full.svg">
-      </div>
+    <div class="layout-padding justify-center">
+      <q-card style="padding-top: 25px">
+        <q-card-title>
+          <center>
+            <p class="light-paragraph">
+              <transition group mode="out-in" duration="150"
+                enterActiveClass="animated fadeIn"
+                :leaveActiveClass="animateStyle">
+                <div key="a" v-if="show && !isDone">
+                  <big>{{currentWord}}</big>
+                </div>
+                <div key="b" v-else-if="!show && !isDone">
+                  <big>{{currentWord}}</big>
+                </div>
+                <div key="c" v-else>
+                  <p class="strong text-faded">
+                    <big>
+                      Done!
+                    </big>
+                  </p>
+                </div>
+              </transition>
+            </p>
+          </center>
+          <div slot="right">{{statusText}}</div>
+          <right></right>
+        </q-card-title>
+        <q-card-separator/>
+        <q-card-actions align="center">
+          <q-btn big flat class="big-button" :disabled="!canRewind"
+            color="faded" icon="fast_rewind" @click="onRewind" />
+          <q-btn big flat class="big-button" :disabled="isDone"
+            color="positive" icon="thumb_up" @click="onAccept" />
+          <q-btn big flat class="big-button" :disabled="isDone"
+            color="negative" icon="thumb_down" @click="onReject" />
+          <q-btn big flat class="big-button" :disabled="isDone"
+            color="faded" icon="fast_forward" @click="onIgnore" />
+        </q-card-actions>
+      </q-card>
     </div>
   </q-layout>
 </template>
 
 <script>
+import 'quasar-extras/animate/fadeIn.css'
+import 'quasar-extras/animate/fadeOut.css'
+import 'quasar-extras/animate/fadeOutRight.css'
+import 'quasar-extras/animate/fadeOutLeft.css'
+
 import {
-  dom,
-  event,
-  openURL,
   QLayout,
   QToolbar,
   QToolbarTitle,
@@ -73,29 +98,25 @@ import {
   QListHeader,
   QItem,
   QItemSide,
-  QItemMain
+  QItemMain,
+  QFixedPosition,
+  QCard,
+  QCardTitle,
+  QCardMain,
+  QCardSeparator,
+  QCardActions
 } from 'quasar'
 
-const
-  { viewport } = dom,
-  { position } = event,
-  moveForce = 30,
-  rotateForce = 40,
-  RAD_TO_DEG = 180 / Math.PI
-
-function getRotationFromAccel (accelX, accelY, accelZ) {
-  /* Reference: http://stackoverflow.com/questions/3755059/3d-accelerometer-calculate-the-orientation#answer-30195572 */
-  const sign = accelZ > 0 ? 1 : -1
-  const miu = 0.001
-
-  return {
-    roll: Math.atan2(accelY, sign * Math.sqrt(Math.pow(accelZ, 2) + miu * Math.pow(accelX, 2))) * RAD_TO_DEG,
-    pitch: -Math.atan2(accelX, Math.sqrt(Math.pow(accelY, 2) + Math.pow(accelZ, 2))) * RAD_TO_DEG
-  }
+const Action = {
+  REWIND: 'rewind',
+  ACCEPT: 'accept',
+  REJECT: 'reject',
+  IGNORE: 'ignore'
 }
 
 export default {
   name: 'index',
+
   components: {
     QLayout,
     QToolbar,
@@ -106,116 +127,98 @@ export default {
     QListHeader,
     QItem,
     QItemSide,
-    QItemMain
+    QItemMain,
+    QFixedPosition,
+    QCard,
+    QCardTitle,
+    QCardMain,
+    QCardSeparator,
+    QCardActions
   },
+
   data () {
     return {
-      orienting: window.DeviceOrientationEvent && !this.$q.platform.is.desktop,
-      rotating: window.DeviceMotionEvent && !this.$q.platform.is.desktop,
-      moveX: 0,
-      moveY: 0,
-      rotateY: 0,
-      rotateX: 0
+      words: [
+        'Foo',
+        'Bar',
+        'Baz',
+        'Qwe'
+      ],
+      pos: 0,
+      show: true,
+      action: Action.ACCEPT
     }
   },
-  computed: {
-    position () {
-      const transform = `rotateX(${this.rotateX}deg) rotateY(${this.rotateY}deg)`
-      return {
-        top: this.moveY + 'px',
-        left: this.moveX + 'px',
-        '-webkit-transform': transform,
-        '-ms-transform': transform,
-        transform
-      }
-    }
-  },
+
   methods: {
-    launch (url) {
-      openURL(url)
+    onRewind () {
+      this.advance(Action.REWIND)
     },
-    move (evt) {
-      const
-        {width, height} = viewport(),
-        {top, left} = position(evt),
-        halfH = height / 2,
-        halfW = width / 2
 
-      this.moveX = (left - halfW) / halfW * -moveForce
-      this.moveY = (top - halfH) / halfH * -moveForce
-      this.rotateY = (left / width * rotateForce * 2) - rotateForce
-      this.rotateX = -((top / height * rotateForce * 2) - rotateForce)
+    onAccept () {
+      this.advance(Action.ACCEPT)
     },
-    rotate (evt) {
-      if (evt.rotationRate &&
-          evt.rotationRate.beta !== null &&
-          evt.rotationRate.gamma !== null) {
-        this.rotateX = evt.rotationRate.beta * 0.7
-        this.rotateY = evt.rotationRate.gamma * -0.7
-      }
-      else {
-        /* evt.acceleration may be null in some cases, so we'll fall back
-           to evt.accelerationIncludingGravity */
-        const
-          accelX = evt.acceleration.x || evt.accelerationIncludingGravity.x,
-          accelY = evt.acceleration.y || evt.accelerationIncludingGravity.y,
-          accelZ = evt.acceleration.z || evt.accelerationIncludingGravity.z - 9.81,
-          rotation = getRotationFromAccel(accelX, accelY, accelZ)
 
-        this.rotateX = rotation.roll * 0.7
-        this.rotateY = rotation.pitch * -0.7
-      }
+    onReject () {
+      this.advance(Action.REJECT)
     },
-    orient (evt) {
-      if (evt.beta === null || evt.gamma === null) {
-        window.removeEventListener('deviceorientation', this.orient, false)
-        this.orienting = false
 
-        window.addEventListener('devicemotion', this.rotate, false)
-      }
-      else {
-        this.rotateX = evt.beta * 0.7
-        this.rotateY = evt.gamma * -0.7
-      }
+    onIgnore () {
+      this.advance(Action.IGNORE)
+    },
+
+    advance (action) {
+      this.action = action
+      this.pos += action === Action.REWIND ? -1 : 1
+      this.show = !this.show
     }
   },
-  mounted () {
-    this.$nextTick(() => {
-      if (this.orienting) {
-        window.addEventListener('deviceorientation', this.orient, false)
+
+  computed: {
+    currentWord () {
+      return this.words[this.pos]
+    },
+
+    numWords () {
+      return this.words.length
+    },
+
+    canRewind () {
+      return this.pos > 0
+    },
+
+    isDone () {
+      return this.pos === this.numWords
+    },
+
+    animateStyle () {
+      const styles = {
+        rewind: 'fadeOutRight',
+        accept: 'fadeOut',
+        reject: 'fadeOut',
+        ignore: 'fadeOutLeft'
       }
-      else if (this.rotating) {
-        window.addEventListener('devicemove', this.rotate, false)
-      }
-      else {
-        document.addEventListener('mousemove', this.move)
-      }
-    })
-  },
-  beforeDestroy () {
-    if (this.orienting) {
-      window.removeEventListener('deviceorientation', this.orient, false)
-    }
-    else if (this.rotating) {
-      window.removeEventListener('devicemove', this.rotate, false)
-    }
-    else {
-      document.removeEventListener('mousemove', this.move)
+      return `animated ${styles[this.action]} ${this.action}`
+    },
+
+    statusText () {
+      const pos = this.isDone ? this.numWords : this.pos + 1
+      return `${pos} of ${this.numWords}`
     }
   }
 }
 </script>
 
-<style lang="stylus">
-.logo-container
-  width 255px
-  height 242px
-  perspective 800px
-  position absolute
-  top 50%
-  left 50%
-  transform translateX(-50%) translateY(-50%)
-.logo
-  position absolute
-  transform-style preserve-3d
+<style lang="sass">
+$rewind-color: darken(#777, 0%);
+$accept-color: darken(#21ba45, 0%);
+$reject-color: darken(#db2828, 0%);
+$ignore-color: darken(#777, 0%);
+
+.rewind { color: $rewind-color; font-weight: 200; }
+.accept { color: $accept-color; font-weight: 500; }
+.reject { color: $reject-color; font-weight: 500; }
+.ignore { color: $ignore-color; font-weight: 200; }
+
+.big-button { padding-left: 18px !important; }
 </style>
