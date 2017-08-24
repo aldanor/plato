@@ -39,46 +39,68 @@
       </q-list>
     </div>
 
-    <div class="layout-padding justify-center">
-      <q-card style="padding-top: 25px">
-        <q-card-title>
-          <center>
-            <p class="light-paragraph">
-              <transition group mode="out-in" duration="150"
-                enterActiveClass="animated fadeIn"
-                :leaveActiveClass="animateStyle">
-                <div key="a" v-if="show && !isDone">
-                  <big>{{currentWord}}</big>
-                </div>
-                <div key="b" v-else-if="!show && !isDone">
-                  <big>{{currentWord}}</big>
-                </div>
-                <div key="c" v-else>
-                  <p class="strong text-faded">
-                    <big>
-                      Done!
-                    </big>
-                  </p>
-                </div>
-              </transition>
-            </p>
-          </center>
-          <div slot="right">{{statusText}}</div>
-          <right></right>
-        </q-card-title>
-        <q-progress :percentage="progress" color="primary" animate />
-        <q-card-separator/>
-        <q-card-actions align="center">
-          <q-btn big flat class="big-button" :disabled="!canRewind"
-            color="faded" icon="fast_rewind" @click="onRewind" />
-          <q-btn big flat class="big-button" :disabled="isDone"
-            color="positive" icon="thumb_up" @click="onAccept" />
-          <q-btn big flat class="big-button" :disabled="isDone"
-            color="negative" icon="thumb_down" @click="onReject" />
-          <q-btn big flat class="big-button" :disabled="isDone"
-            color="faded" icon="fast_forward" @click="onIgnore" />
-        </q-card-actions>
-      </q-card>
+    <div class="layout-padding row justify-center">
+      <div style="width: 400px; max-width: 90vw;">
+        <q-card style="padding-top: 25px">
+          <q-card-title>
+            <center>
+              <p class="light-paragraph">
+                <transition group mode="out-in" duration="150"
+                  enterActiveClass="animated fadeIn"
+                  :leaveActiveClass="animateStyle">
+                  <div key="a" v-if="show && !isDone">
+                    <big>{{currentWord}}</big>
+                  </div>
+                  <div key="b" v-else-if="!show && !isDone">
+                    <big>{{currentWord}}</big>
+                  </div>
+                  <div key="c" v-else>
+                    <p class="strong text-faded">
+                      <big>
+                        Done!
+                      </big>
+                    </p>
+                  </div>
+                </transition>
+              </p>
+            </center>
+            <div slot="right">{{statusText}}</div>
+            <right></right>
+          </q-card-title>
+          <q-progress :percentage="progress" color="primary" animate />
+          <q-card-separator/>
+          <q-card-actions align="center">
+            <q-btn big flat class="big-button" :disabled="!canRewind"
+              color="faded" icon="fast_rewind" @click="onRewind" />
+            <q-btn big flat class="big-button" :disabled="isDone"
+              color="positive" icon="thumb_up" @click="onAccept" />
+            <q-btn big flat class="big-button" :disabled="isDone"
+              color="negative" icon="thumb_down" @click="onReject" />
+            <q-btn big flat class="big-button" :disabled="isDone"
+              color="faded" icon="fast_forward" @click="onIgnore" />
+          </q-card-actions>
+        </q-card>
+      </div>
+    </div>
+
+    <div class="layout-padding row justify-center"
+      style="padding-top: 0;" v-show="canRewind">
+      <div style="width: 400px; max-width: 90vw;">
+        <q-list link inset-separator>
+          <template v-for="(r, i) in lastRatings">
+            <q-item>
+              <q-item-side left
+                :icon="iconForRating(r.rating)"
+                :color="colorForRating(r.rating)" />
+              <q-item-main
+                :label="r.word"
+                :class="classForRating(r.rating)" />
+              <q-item-side right
+                :stamp="`#${r.num}`" />
+            </q-item>
+          </template>
+        </q-list>
+      </div>
     </div>
   </q-layout>
 </template>
@@ -100,6 +122,7 @@ import {
   QItem,
   QItemSide,
   QItemMain,
+  QItemTile,
   QFixedPosition,
   QCard,
   QCardTitle,
@@ -116,6 +139,12 @@ const Action = {
   IGNORE: 'ignore'
 }
 
+const Rating = {
+  NONE: -1,
+  BAD: 0,
+  GOOD: 1
+}
+
 export default {
   name: 'index',
 
@@ -130,6 +159,7 @@ export default {
     QItem,
     QItemSide,
     QItemMain,
+    QItemTile,
     QFixedPosition,
     QCard,
     QCardTitle,
@@ -142,15 +172,26 @@ export default {
   data () {
     return {
       words: [
-        'Foo',
-        'Bar',
-        'Baz',
-        'Qwe'
+        'Banto',
+        'Victo',
+        'Molin',
+        'Tangi',
+        'Fango',
+        'Numa',
+        'Spando',
+        'Ravio',
+        'Simi',
+        'Aira'
       ],
+      ratings: [],
       pos: 0,
       show: true,
       action: Action.ACCEPT
     }
+  },
+
+  created () {
+    this.ratings = Array(this.numWords).fill(Rating.NONE)
   },
 
   methods: {
@@ -172,8 +213,35 @@ export default {
 
     advance (action) {
       this.action = action
-      this.pos += action === Action.REWIND ? -1 : 1
+      if (action === Action.REWIND) {
+        this.pos -= 1
+      }
+      else {
+        const rating = {
+          accept: Rating.GOOD,
+          reject: Rating.BAD,
+          ignore: Rating.NONE
+        }[action]
+        this.ratings[this.pos] = rating
+        console.log(this.ratings)
+        this.pos += 1
+      }
       this.show = !this.show
+    },
+
+    colorForRating (rating) {
+      return rating === Rating.NONE ? 'faded'
+        : rating === Rating.GOOD ? 'positive' : 'negative'
+    },
+
+    iconForRating (rating) {
+      return rating === Rating.NONE ? ''
+        : rating === Rating.GOOD ? 'done' : 'clear'
+    },
+
+    classForRating (rating) {
+      return rating === Rating.NONE ? 'text-faded light-paragraph'
+        : ''
     }
   },
 
@@ -214,6 +282,18 @@ export default {
 
     statusText () {
       return `${this.numDone} of ${this.numWords}`
+    },
+
+    lastRatings () {
+      let ratings = []
+      for (let i = this.pos - 1; i > this.pos - 6 && i >= 0; i--) {
+        ratings.push({
+          num: i + 1,
+          word: this.words[i],
+          rating: this.ratings[i]
+        })
+      }
+      return ratings
     }
   }
 }
