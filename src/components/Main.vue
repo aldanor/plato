@@ -60,7 +60,6 @@
               </p>
             </center>
             <div slot="right">{{statusText}}</div>
-            <right></right>
           </q-card-title>
           <q-progress :percentage="progress" color="primary" animate />
           <q-card-separator/>
