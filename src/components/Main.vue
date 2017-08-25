@@ -65,14 +65,14 @@
           <q-progress :percentage="progress" color="primary" animate />
           <q-card-separator/>
           <q-card-actions align="center">
-            <q-btn big flat class="big-button" :disabled="!canRewind"
-              color="faded" icon="fast_rewind" @click="onRewind" />
-            <q-btn big flat class="big-button" :disabled="isDone"
-              color="positive" icon="thumb_up" @click="onAccept" />
-            <q-btn big flat class="big-button" :disabled="isDone"
-              color="negative" icon="thumb_down" @click="onReject" />
-            <q-btn big flat class="big-button" :disabled="isDone"
-              color="faded" icon="fast_forward" @click="onIgnore" />
+            <big-button icon="fast_rewind" color="faded"
+              :disabled="!canRewind" @click="onRewind" />
+            <big-button icon="thumb_up" color="positive"
+              :disabled="isDone" @click="onAccept" />
+            <big-button icon="thumb_down" color="negative"
+              :disabled="isDone" @click="onReject" />
+            <big-button icon="fast_forward" color="faded"
+              :disabled="isDone" @click="onIgnore" />
           </q-card-actions>
         </q-card>
       </div>
@@ -128,6 +128,8 @@ import {
   QProgress
 } from 'quasar'
 
+import BigButton from './BigButton.vue'
+
 const Action = {
   REWIND: 'rewind',
   ACCEPT: 'accept',
@@ -162,7 +164,8 @@ export default {
     QCardMain,
     QCardSeparator,
     QCardActions,
-    QProgress
+    QProgress,
+    BigButton
   },
 
   data () {
