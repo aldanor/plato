@@ -5,16 +5,11 @@
     :left-class="{'bg-grey-2': true}"
   >
     <q-toolbar slot="header">
-      <q-btn
-        flat
-        @click="$refs.layout.toggleLeft()"
-      >
+      <q-btn flat @click="$refs.layout.toggleLeft()">
         <q-icon name="menu" />
       </q-btn>
 
-      <q-toolbar-title>
-        NLP Annotate
-      </q-toolbar-title>
+      <q-toolbar-title>Plato</q-toolbar-title>
     </q-toolbar>
 
     <div slot="left">
