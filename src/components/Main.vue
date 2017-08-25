@@ -242,7 +242,7 @@ export default {
     },
 
     classForRating (rating) {
-      return rating === Rating.NONE ? 'text-faded' : ''
+      return rating === Rating.NONE ? 'text-faded light-paragraph' : 'text-faded'
     }
   },
 
