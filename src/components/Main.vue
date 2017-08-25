@@ -81,7 +81,7 @@
       style="padding-top: 0;" v-show="canRewind">
       <div style="width: 400px; max-width: 90vw;">
         <q-list link inset-separator>
-          <q-list-header>Recent Words</q-list-header>
+          <q-list-header>Recent Entries</q-list-header>
           <template v-for="(r, i) in lastRatings">
             <q-item @click="jumpBack(r.num - 1)">
               <q-item-side left
@@ -91,7 +91,7 @@
                 :label="r.word"
                 :class="classForRating(r.rating)" />
               <q-item-side right
-                :stamp="`#${r.num}`" />
+                :stamp="`${r.num}`" />
             </q-item>
           </template>
         </q-list>
