@@ -35,8 +35,8 @@
     </div>
 
     <div class="layout-padding row justify-center">
-      <div style="width: 400px; max-width: 90vw;">
-        <q-card style="padding-top: 25px">
+      <div style="width: 412px; max-width: 93vw;">
+        <q-card style="padding-top: 20px; margin-bottom: 0;">
           <q-card-title>
             <center>
               <p class="light-paragraph">
