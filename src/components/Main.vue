@@ -24,9 +24,9 @@
               </transition>
             </center>
             <transition
-              enterActiveClas="animated fadeIn"
+              enterActiveClass="animated fadeIn"
               leaveActiveClass="animated fadeOut"
-              duration="150">
+              duration="300">
               <div class="text-faded" id="status-bottom-right" v-show="!isDone">
                 <small>{{statusText}}</small>
               </div>
