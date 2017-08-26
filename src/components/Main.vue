@@ -124,7 +124,8 @@ export default {
     ]),
     ...mapState([
       'lastAction',
-      'counter'
+      'counter',
+      'pos'
     ]),
 
     animateOddFrame () {
@@ -132,7 +133,7 @@ export default {
     },
 
     progress () {
-      return this.pos * 100.0 / this.numWords
+      return this.pos * 100.0 / this.numEntries
     },
 
     animateClass () {
