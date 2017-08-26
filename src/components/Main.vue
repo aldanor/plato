@@ -42,12 +42,12 @@
               <p class="light-paragraph">
                 <transition group mode="out-in" duration="150"
                   enterActiveClass="animated fadeIn"
-                  :leaveActiveClass="animateStyle">
-                  <div key="a" v-if="show && !isDone">
-                    <big>{{currentWord}}</big>
+                  :leaveActiveClass="animateClass">
+                  <div key="a" v-if="animateOddFrame && !isDone">
+                    <big>{{currentEntry.entry}}</big>
                   </div>
-                  <div key="b" v-else-if="!show && !isDone">
-                    <big>{{currentWord}}</big>
+                  <div key="b" v-else-if="!animateOddFrame && !isDone">
+                    <big>{{currentEntry.entry}}</big>
                   </div>
                   <div key="c" v-else>
                     <p class="strong text-faded">
@@ -65,13 +65,13 @@
           <q-card-separator/>
           <q-card-actions align="center">
             <big-button icon="fast_rewind" color="faded"
-              :disabled="!canRewind" @click="onRewind" />
+              :disabled="!canRewind" @click="rewind" />
             <big-button icon="thumb_up" color="positive"
-              :disabled="isDone" @click="onAccept" />
+              :disabled="isDone" @click="accept" />
             <big-button icon="thumb_down" color="negative"
-              :disabled="isDone" @click="onReject" />
+              :disabled="isDone" @click="reject" />
             <big-button icon="fast_forward" color="faded"
-              :disabled="isDone" @click="onIgnore" />
+              :disabled="isDone" @click="ignore" />
           </q-card-actions>
         </q-card>
       </div>
@@ -82,16 +82,16 @@
       <div style="width: 400px; max-width: 90vw;">
         <q-list link inset-separator>
           <q-list-header>Recent Entries</q-list-header>
-          <template v-for="(r, i) in lastRatings">
-            <q-item @click="jumpBack(r.num - 1)">
+          <template v-for="(e, i) in recentEntries">
+            <q-item @click="jumpTo(e.index)">
               <q-item-side left
-                :icon="iconForRating(r.rating)"
-                :color="colorForRating(r.rating)" />
+                :icon="iconForRating(e.rating)"
+                :color="colorForRating(e.rating)" />
               <q-item-main
-                :label="r.word"
-                :class="classForRating(r.rating)" />
+                :label="e.entry"
+                :class="classForRating(e.rating)" />
               <q-item-side right
-                :stamp="`${r.num}`" />
+                :stamp="`${e.index + 1}`" />
             </q-item>
           </template>
         </q-list>
@@ -117,8 +117,6 @@ import {
   QItem,
   QItemSide,
   QItemMain,
-  QItemTile,
-  QFixedPosition,
   QCard,
   QCardTitle,
   QCardMain,
@@ -129,18 +127,8 @@ import {
 
 import BigButton from './BigButton.vue'
 
-const Action = {
-  REWIND: 'rewind',
-  ACCEPT: 'accept',
-  REJECT: 'reject',
-  IGNORE: 'ignore'
-}
-
-const Rating = {
-  NONE: -1,
-  BAD: 0,
-  GOOD: 1
-}
+import { mapState, mapActions, mapGetters } from 'vuex'
+import { Rating, Action } from '../common'
 
 export default {
   name: 'index',
@@ -156,8 +144,6 @@ export default {
     QItem,
     QItemSide,
     QItemMain,
-    QItemTile,
-    QFixedPosition,
     QCard,
     QCardTitle,
     QCardMain,
@@ -167,149 +153,87 @@ export default {
     BigButton
   },
 
-  data () {
-    return {
-      words: [
-        'Banto',
-        'Victo',
-        'Molin',
-        'Tangi',
-        'Fango',
-        'Numa',
-        'Spando',
-        'Ravio',
-        'Simi',
-        'Aira'
-      ],
-      ratings: [],
-      pos: 0,
-      show: true,
-      action: Action.ACCEPT
-    }
-  },
-
-  created () {
-    this.ratings = Array(this.numWords).fill(Rating.NONE)
-  },
-
   methods: {
-    onRewind () {
-      this.advance(Action.REWIND, this.pos - 1)
-    },
+    ...mapActions([
+      'rewind',
+      'accept',
+      'reject',
+      'ignore',
+      'jumpTo'
+    ]),
 
-    onAccept () {
-      this.advance(Action.ACCEPT)
-    },
-
-    onReject () {
-      this.advance(Action.REJECT)
-    },
-
-    onIgnore () {
-      this.advance(Action.IGNORE)
-    },
-
-    jumpBack (pos) {
-      this.advance(Action.REWIND, pos)
-    },
-
-    advance (action, pos = null) {
-      pos = pos === null ? this.pos + 1 : pos
-      this.action = action
-      if (action === Action.REWIND) {
-        this.pos = pos
-      }
-      else {
-        const rating = {
-          accept: Rating.GOOD,
-          reject: Rating.BAD,
-          ignore: Rating.NONE
-        }[action]
-        this.ratings[this.pos] = rating
-        this.pos += 1
-      }
-      this.show = !this.show
-    },
-
-    colorForRating (rating) {
-      return rating === Rating.NONE ? 'faded'
-        : rating === Rating.GOOD ? 'positive' : 'negative'
+    mapRating (rating, values) {
+      return {
+        [Rating.NONE]: values[0],
+        [Rating.BAD]: values[1],
+        [Rating.GOOD]: values[2]
+      }[rating]
     },
 
     iconForRating (rating) {
-      return rating === Rating.NONE ? ''
-        : rating === Rating.GOOD ? 'done' : 'clear'
+      return this.mapRating(rating, ['', 'clear', 'done'])
+    },
+
+    colorForRating (rating) {
+      return this.mapRating(rating, ['faded', 'negative', 'positive'])
     },
 
     classForRating (rating) {
-      return rating === Rating.NONE ? 'text-faded light-paragraph' : 'text-faded'
+      return 'text-faded' + this.mapRating(rating, [' light-paragraph', '', ''])
     }
   },
 
   computed: {
-    currentWord () {
-      return this.words[this.pos]
-    },
+    ...mapGetters([
+      'currentEntry',
+      'numEntries',
+      'canRewind',
+      'isDone',
+      'numDone',
+      'recentEntries'
+    ]),
+    ...mapState([
+      'lastAction',
+      'counter'
+    ]),
 
-    numWords () {
-      return this.words.length
-    },
-
-    canRewind () {
-      return this.pos > 0
-    },
-
-    isDone () {
-      return this.pos === this.numWords
-    },
-
-    numDone () {
-      return this.isDone ? this.numWords : this.pos + 1
+    animateOddFrame () {
+      return !(this.counter % 2)
     },
 
     progress () {
       return this.pos * 100.0 / this.numWords
     },
 
-    animateStyle () {
-      const styles = {
-        rewind: 'fadeOutRight',
-        accept: 'fadeOut',
-        reject: 'fadeOut',
-        ignore: 'fadeOutLeft'
-      }
-      return `animated ${styles[this.action]} ${this.action}`
+    animateClass () {
+      return {
+        [Action.REWIND]: 'fadeOutRight animateNeutral',
+        [Action.ACCEPT]: 'fadeOut animatePositive',
+        [Action.REJECT]: 'fadeOut animateNegative',
+        [Action.IGNORE]: 'fadeOutLeft animateNeutral'
+      }[this.lastAction] + ' animated'
     },
 
     statusText () {
-      return `${this.numDone} of ${this.numWords}`
-    },
-
-    lastRatings () {
-      let ratings = []
-      for (let i = this.pos - 1; i > this.pos - 6 && i >= 0; i--) {
-        ratings.push({
-          num: i + 1,
-          word: this.words[i],
-          rating: this.ratings[i]
-        })
-      }
-      return ratings
+      return `${this.numDone} of ${this.numEntries}`
     }
   }
 }
 </script>
 
-<style lang="sass">
-$rewind-color: darken(#777, 0%);
-$accept-color: darken(#21ba45, 0%);
-$reject-color: darken(#db2828, 0%);
-$ignore-color: darken(#777, 0%);
+<style>
+.animateNeutral {
+  color: #777;
+  font-weight: 200;
+}
 
-.rewind { color: $rewind-color; font-weight: 200; }
-.accept { color: $accept-color; font-weight: 500; }
-.reject { color: $reject-color; font-weight: 500; }
-.ignore { color: $ignore-color; font-weight: 200; }
+.animatePositive {
+  color: #21ba45;
+  font-weight: 500;
+}
 
-.big-button { padding-left: 18px !important; }
+.animateNegative {
+  color: #db2828;
+  font-weight: 500;
+}
 </style>

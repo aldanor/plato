@@ -6,16 +6,13 @@
 require(`quasar/dist/quasar.${__THEME}.css`)
 // ==============================
 
-// Uncomment the following lines if you need IE11/Edge support
-// require(`quasar/dist/quasar.ie`)
-// require(`quasar/dist/quasar.ie.${__THEME}.css`)
-
 import Vue from 'vue'
 import Quasar from 'quasar'
 import router from './router'
 
 Vue.config.productionTip = false
-Vue.use(Quasar) // Install Quasar Framework
+Vue.use(Quasar)
+import store from './store'
 
 if (__THEME === 'mat') {
   require('quasar-extras/roboto-font')
@@ -29,6 +26,7 @@ Quasar.start(() => {
   /* eslint-disable no-new */
   new Vue({
     el: '#q-app',
+    store,
     router,
     render: h => h(require('./App'))
   })
