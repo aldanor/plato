@@ -45,7 +45,7 @@ export default new Vuex.Store({
       return state.pos > 0
     },
     currentEntry (state) {
-      return state.entries[state.pos]
+      return state.entries[state.pos].entry
     },
     numDone (state, getters) {
       return getters.isDone ? getters.numEntries : state.pos + 1

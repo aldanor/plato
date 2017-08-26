@@ -9,25 +9,19 @@
         <q-card style="padding-top: 20px; margin-bottom: 0;">
           <q-card-title style="position: relative;">
             <center>
-              <p class="light-paragraph">
-                <transition group mode="out-in" duration="150"
-                  enterActiveClass="animated fadeIn"
-                  :leaveActiveClass="animateClass">
-                  <div key="a" v-if="animateOddFrame && !isDone">
-                    <big>{{currentEntry.entry}}</big>
-                  </div>
-                  <div key="b" v-else-if="!animateOddFrame && !isDone">
-                    <big>{{currentEntry.entry}}</big>
-                  </div>
-                  <div key="c" v-else>
-                    <p class="strong text-faded">
-                      <big>
-                        Done!
-                      </big>
-                    </p>
-                  </div>
-                </transition>
-              </p>
+              <transition group mode="out-in" duration="150"
+                enterActiveClass="animated fadeIn"
+                :leaveActiveClass="animateClass">
+                <p class="entry" key="a" v-if="animateOddFrame && !isDone">
+                  {{currentEntry}}
+                </p>
+                <p class="entry" key="b" v-else-if="!animateOddFrame && !isDone">
+                  {{currentEntry}}
+                </p>
+                <p class="strong text-faded" key="c" v-else>
+                  <big>Done!</big>
+                </p>
+              </transition>
             </center>
             <transition
               enterActiveClas="animated fadeIn"
@@ -145,10 +139,10 @@ export default {
 
     animateClass () {
       return {
-        [Action.REWIND]: 'fadeOutRight animateNeutral',
-        [Action.ACCEPT]: 'fadeOut animatePositive',
-        [Action.REJECT]: 'fadeOut animateNegative',
-        [Action.IGNORE]: 'fadeOutLeft animateNeutral'
+        [Action.REWIND]: 'fadeOutRight animate-neutral',
+        [Action.ACCEPT]: 'fadeOut animate-positive',
+        [Action.REJECT]: 'fadeOut animate-negative',
+        [Action.IGNORE]: 'fadeOutLeft animate-neutral'
       }[this.lastAction] + ' animated'
     },
 
@@ -166,18 +160,25 @@ export default {
   bottom: 0px;
 }
 
-.animateNeutral {
-  color: #777;
+.entry {
   font-weight: 200;
+  font-size: 170%;
 }
 
-.animatePositive {
+.animate-positive.entry,
+.animate-negative.entry {
+  font-weight: 500;
+}
+
+.animate-neutral {
+  color: #777;
+}
+
+.animate-positive {
   color: #21ba45;
-  font-weight: 500;
 }
 
-.animateNegative {
+.animate-negative {
   color: #db2828;
-  font-weight: 500;
 }
 </style>
