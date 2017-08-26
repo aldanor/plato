@@ -80,21 +80,7 @@
     <div class="layout-padding row justify-center"
       style="padding-top: 0;" v-show="canRewind">
       <div style="width: 400px; max-width: 90vw;">
-        <q-list link inset-separator>
-          <q-list-header>Recent Entries</q-list-header>
-          <template v-for="(e, i) in recentEntries">
-            <q-item @click="jumpTo(e.index)">
-              <q-item-side left
-                :icon="iconForRating(e.rating)"
-                :color="colorForRating(e.rating)" />
-              <q-item-main
-                :label="e.entry"
-                :class="classForRating(e.rating)" />
-              <q-item-side right
-                :stamp="`${e.index + 1}`" />
-            </q-item>
-          </template>
-        </q-list>
+        <recent-entries />
       </div>
     </div>
   </q-layout>
@@ -126,9 +112,10 @@ import {
 } from 'quasar'
 
 import BigButton from './BigButton.vue'
+import RecentEntries from './RecentEntries.vue'
 
 import { mapState, mapActions, mapGetters } from 'vuex'
-import { Rating, Action } from '../common'
+import { Action } from '../common'
 
 export default {
   name: 'index',
@@ -150,38 +137,11 @@ export default {
     QCardSeparator,
     QCardActions,
     QProgress,
-    BigButton
+    BigButton,
+    RecentEntries
   },
 
-  methods: {
-    ...mapActions([
-      'rewind',
-      'accept',
-      'reject',
-      'ignore',
-      'jumpTo'
-    ]),
-
-    mapRating (rating, values) {
-      return {
-        [Rating.NONE]: values[0],
-        [Rating.BAD]: values[1],
-        [Rating.GOOD]: values[2]
-      }[rating]
-    },
-
-    iconForRating (rating) {
-      return this.mapRating(rating, ['', 'clear', 'done'])
-    },
-
-    colorForRating (rating) {
-      return this.mapRating(rating, ['faded', 'negative', 'positive'])
-    },
-
-    classForRating (rating) {
-      return 'text-faded' + this.mapRating(rating, [' light-paragraph', '', ''])
-    }
-  },
+  methods: mapActions(['rewind', 'accept', 'reject', 'ignore', 'jumpTo']),
 
   computed: {
     ...mapGetters([
