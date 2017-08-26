@@ -7,7 +7,7 @@
     <div class="layout-padding row justify-center">
       <div style="width: 412px; max-width: 93vw;">
         <q-card style="padding-top: 20px; margin-bottom: 0;">
-          <q-card-title>
+          <q-card-title style="position: relative;">
             <center>
               <p class="light-paragraph">
                 <transition group mode="out-in" duration="150"
@@ -29,7 +29,14 @@
                 </transition>
               </p>
             </center>
-            <div slot="right">{{statusText}}</div>
+            <transition
+              enterActiveClas="animated fadeIn"
+              leaveActiveClass="animated fadeOut"
+              duration="150">
+              <div class="text-faded" id="status-bottom-right" v-show="!isDone">
+                <small>{{statusText}}</small>
+              </div>
+            </transition>
           </q-card-title>
           <q-progress :percentage="progress" color="primary" animate />
           <q-card-separator/>
@@ -153,6 +160,12 @@ export default {
 </script>
 
 <style>
+#status-bottom-right {
+  position: absolute;
+  right: 8px;
+  bottom: 0px;
+}
+
 .animateNeutral {
   color: #777;
   font-weight: 200;
