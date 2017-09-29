@@ -49,10 +49,16 @@
     </div>
 
     <div class="layout-padding row justify-center"
-      style="padding-top: 0;" v-show="canRewind">
+      style="padding-top: 0; margin-bottom: 0;" v-show="canRewind">
       <div style="width: 400px; max-width: 90vw;">
         <recent-entries />
       </div>
+    </div>
+
+    <div class="layout-padding row justify-center">
+      <div style="width: 412px; max-width: 93vw;">
+        <upload></upload>
+     </div>
     </div>
   </q-layout>
 </template>
@@ -63,27 +69,9 @@ import 'quasar-extras/animate/fadeOut.css'
 import 'quasar-extras/animate/fadeOutRight.css'
 import 'quasar-extras/animate/fadeOutLeft.css'
 
-import {
-  QLayout,
-  QToolbar,
-  QToolbarTitle,
-  QBtn,
-  QIcon,
-  QList,
-  QListHeader,
-  QItem,
-  QItemSide,
-  QItemMain,
-  QCard,
-  QCardTitle,
-  QCardMain,
-  QCardSeparator,
-  QCardActions,
-  QProgress
-} from 'quasar'
-
 import BigButton from './BigButton.vue'
 import RecentEntries from './RecentEntries.vue'
+import Upload from './Upload.vue'
 
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { Action } from '../common'
@@ -91,26 +79,7 @@ import { Action } from '../common'
 export default {
   name: 'index',
 
-  components: {
-    QLayout,
-    QToolbar,
-    QToolbarTitle,
-    QBtn,
-    QIcon,
-    QList,
-    QListHeader,
-    QItem,
-    QItemSide,
-    QItemMain,
-    QCard,
-    QCardTitle,
-    QCardMain,
-    QCardSeparator,
-    QCardActions,
-    QProgress,
-    BigButton,
-    RecentEntries
-  },
+  components: { BigButton, RecentEntries, Upload },
 
   methods: mapActions(['rewind', 'accept', 'reject', 'ignore', 'jumpTo']),
 
@@ -154,6 +123,15 @@ export default {
 </script>
 
 <style>
+#file {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
 #status-bottom-right {
   position: absolute;
   right: 8px;

@@ -7,11 +7,56 @@ require(`quasar/dist/quasar.${__THEME}.css`)
 // ==============================
 
 import Vue from 'vue'
-import Quasar from 'quasar'
 import router from './router'
 
+import Quasar, {
+  QToolbar,
+  QToolbarTitle,
+  QBtn,
+  QIcon,
+  QLayout,
+  QList,
+  QListHeader,
+  QItem,
+  QItemSide,
+  QItemMain,
+  QItemTile,
+  QCard,
+  QCardTitle,
+  QCardMain,
+  QCardSeparator,
+  QCardActions,
+  QProgress,
+  QAlert,
+  QCheckbox,
+  QSelect
+} from 'quasar'
+
 Vue.config.productionTip = false
-Vue.use(Quasar)
+Vue.use(Quasar, {
+  components: {
+    QLayout,
+    QToolbar,
+    QToolbarTitle,
+    QBtn,
+    QIcon,
+    QList,
+    QListHeader,
+    QItem,
+    QItemSide,
+    QItemMain,
+    QItemTile,
+    QCard,
+    QCardTitle,
+    QCardMain,
+    QCardSeparator,
+    QCardActions,
+    QProgress,
+    QAlert,
+    QCheckbox,
+    QSelect
+  }
+})
 import store from './store'
 
 if (__THEME === 'mat') {

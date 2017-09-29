@@ -20,14 +20,11 @@
 </template>
 
 <script>
-import { QList, QListHeader, QItem, QItemSide, QItemMain } from 'quasar'
 import { mapGetters, mapActions } from 'vuex'
 import { Rating } from '../common'
 
 export default {
   name: 'recent-entries',
-
-  components: { QList, QListHeader, QItem, QItemSide, QItemMain },
 
   computed: mapGetters(['recentEntries']),
 
