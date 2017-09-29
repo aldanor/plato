@@ -71,6 +71,14 @@ export default new Vuex.Store({
     },
     increment (state) {
       state.counter++
+    },
+    setEntries (state, entries) {
+      state.entries = entries.map((entry, index) => ({
+        entry: entry,
+        index: index,
+        rating: Rating.NONE
+      }))
+      state.pos = 0
     }
   },
 
@@ -102,6 +110,9 @@ export default new Vuex.Store({
       context.commit('jumpTo', pos)
       context.commit('setLastAction', Action.REWIND)
       context.commit('increment')
+    },
+    setEntries (context, entries) {
+      context.commit('setEntries', entries)
     }
   }
 })
