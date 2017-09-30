@@ -33,7 +33,7 @@
         <input type="file" id="file" name="file" accept=".csv" ref="file" />
         <q-btn v-if="!init && !error && data" color="positive" @click="submit">Continue</q-btn>
         <q-btn color="primary" @click="$refs.file.click()">Upload</q-btn>
-        <q-btn color="negative" @click="">Cancel</q-btn>
+        <q-btn v-if="hasData" color="negative" @click="cancel">Cancel</q-btn>
       </q-card-actions>
     </q-card-main>
   </q-card>
@@ -41,6 +41,7 @@
 
 <script>
 import Papa from 'papaparse'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'upload',
@@ -62,7 +63,12 @@ export default {
     },
 
     submit () {
-      this.$store.commit('setEntries', this.selectedData)
+      this.$store.dispatch('setEntries', this.selectedData)
+      this.$store.dispatch('stopUploading')
+    },
+
+    cancel () {
+      this.$store.dispatch('stopUploading')
     },
 
     onParse (inputData) {
@@ -92,6 +98,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters([
+      'hasData'
+    ]),
+
     colOptions () {
       if (!this.data) {
         return []

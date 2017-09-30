@@ -4,31 +4,15 @@ import { Rating, Action } from './common'
 
 Vue.use(Vuex)
 
-const ENTRIES = [
-  'Banto',
-  'Victo',
-  'Molin',
-  'Tangi',
-  'Fango',
-  'Numa',
-  'Spando',
-  'Ravio',
-  'Simi',
-  'Aira'
-]
-
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
 
   state: {
-    entries: ENTRIES.map((entry, index) => ({
-      entry: entry,
-      index: index,
-      rating: Rating.NONE
-    })),
+    entries: [],
     pos: 0,
     lastAction: null,
-    counter: 0
+    counter: 0,
+    isUploading: true
   },
 
   getters: {
@@ -56,6 +40,9 @@ export default new Vuex.Store({
         entries.push(state.entries[i])
       }
       return entries
+    },
+    hasData (state) {
+      return state.entries && state.entries.length > 0
     }
   },
 
@@ -79,6 +66,12 @@ export default new Vuex.Store({
         rating: Rating.NONE
       }))
       state.pos = 0
+    },
+    startUploading (state) {
+      state.isUploading = true
+    },
+    stopUploading (state) {
+      state.isUploading = false
     }
   },
 
@@ -113,6 +106,12 @@ export default new Vuex.Store({
     },
     setEntries (context, entries) {
       context.commit('setEntries', entries)
+    },
+    startUploading (context) {
+      context.commit('startUploading')
+    },
+    stopUploading (context) {
+      context.commit('stopUploading')
     }
   }
 })

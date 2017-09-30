@@ -4,7 +4,7 @@
       <q-toolbar-title>Plato</q-toolbar-title>
     </q-toolbar>
 
-    <div class="layout-padding row justify-center">
+    <div v-if="!isUploading" class="layout-padding row justify-center">
       <div style="width: 412px; max-width: 93vw;">
         <q-card style="padding-top: 20px; margin-bottom: 0;">
           <q-card-title style="position: relative;">
@@ -48,14 +48,14 @@
       </div>
     </div>
 
-    <div class="layout-padding row justify-center"
+    <div v-if="!isUploading" class="layout-padding row justify-center"
       style="padding-top: 0; margin-bottom: 0;" v-show="canRewind">
       <div style="width: 400px; max-width: 90vw;">
         <recent-entries />
       </div>
     </div>
 
-    <div class="layout-padding row justify-center">
+    <div v-if="isUploading" class="layout-padding row justify-center">
       <div style="width: 412px; max-width: 93vw;">
         <upload></upload>
      </div>
@@ -95,7 +95,8 @@ export default {
     ...mapState([
       'lastAction',
       'counter',
-      'pos'
+      'pos',
+      'isUploading'
     ]),
 
     animateOddFrame () {
