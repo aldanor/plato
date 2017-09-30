@@ -1,6 +1,10 @@
 <template>
   <q-card style="padding-top: 20px; margin-bottom: 0;">
     <q-card-main style="position: relative;">
+      <p v-if="data">
+        Total entries: {{selectedData.length}}.
+      </p>
+
       <p v-if="init" class="text-faded justify-center">
         Give me some data!
       </p>
@@ -16,13 +20,15 @@
 
       <p v-if="data">
         <q-select radio v-model="dataCol"
-          :options="colOptions" float-label="Data column">
+          :options="colOptions" float-label="Extract words from this column">
         </q-select>
       </p>
 
       <p v-if="data">
         <q-list>
-          <q-list-header>Sample Entries</q-list-header>
+          <q-list-header>
+            Sample Entries
+          </q-list-header>
           <q-item v-for="e, i in sample" :key="i">
             <q-item-main>{{e}}</q-item-main>
           </q-item>
