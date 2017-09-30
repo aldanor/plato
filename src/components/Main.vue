@@ -35,6 +35,8 @@
           <q-progress :percentage="progress" color="primary" animate />
           <q-card-separator/>
           <q-card-actions align="center">
+            <big-button icon="attachment" color="faded"
+              :disabled="false" @click="startUploading" />
             <big-button icon="fast_rewind" color="faded"
               :disabled="!canRewind" @click="rewind" />
             <big-button icon="thumb_up" color="positive"
@@ -81,7 +83,9 @@ export default {
 
   components: { BigButton, RecentEntries, Upload },
 
-  methods: mapActions(['rewind', 'accept', 'reject', 'ignore', 'jumpTo']),
+  methods: mapActions([
+    'rewind', 'accept', 'reject', 'ignore', 'jumpTo', 'startUploading'
+  ]),
 
   computed: {
     ...mapGetters([
