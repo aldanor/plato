@@ -209,7 +209,7 @@ export default {
 }
 
 .entry {
-  font-weight: 200;
+  font-weight: 300;
   font-size: 170%;
 }
 
