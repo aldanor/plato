@@ -2,7 +2,7 @@
   <q-card style="padding-top: 20px; margin-bottom: 0;">
     <q-card-main style="position: relative;">
       <p v-if="data">
-        Total entries: {{selectedData.length}}.
+        Total entries: {{numRows}}.
       </p>
 
       <p v-if="init" class="text-faded justify-center">
@@ -77,6 +77,21 @@ export default {
       this.$store.dispatch('stopUploading')
     },
 
+    getData (n) {
+      let words = []
+      const col = this.dataCol
+      const data = this.data
+      const offset = this.headerRow ? 1 : 0
+      let length = n + offset
+      if (length > this.data.length) {
+        length = this.data.length
+      }
+      for (let i = offset; i < length; i++) {
+        words.push(data[i][col])
+      }
+      return words
+    },
+
     onParse (inputData) {
       if (/[\x00-\x08\x0E-\x1F]/.test(inputData)) {
         return 'non-text or binary input'
@@ -108,6 +123,13 @@ export default {
       'hasData'
     ]),
 
+    numRows () {
+      if (!this.data || !this.data.length) {
+        return 0
+      }
+      return this.data.length - (this.headerRow ? 1 : 0)
+    },
+
     colOptions () {
       if (!this.data) {
         return []
@@ -123,18 +145,11 @@ export default {
     },
 
     selectedData () {
-      if (!this.data) {
-        return []
-      }
-      let words = []
-      for (let i = this.headerRow ? 1 : 0; i < this.data.length; i++) {
-        words.push(this.data[i][this.dataCol])
-      }
-      return words
+      return this.getData(this.numRows)
     },
 
     sample () {
-      return this.selectedData.slice(0, 4)
+      return this.getData(4)
     }
   },
 
