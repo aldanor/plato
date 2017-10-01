@@ -45,6 +45,8 @@
               :disabled="isDone" @click="reject" />
             <big-button icon="fast_forward" color="faded"
               :disabled="isDone" @click="ignore" />
+            <big-button icon="file_download" color="faded"
+              :disabled="false" @click="download" />
           </q-card-actions>
         </q-card>
       </div>
@@ -78,14 +80,29 @@ import Upload from './Upload.vue'
 import { mapState, mapActions, mapGetters } from 'vuex'
 import { Action } from '../common'
 
+import FileSaver from 'file-saver'
+import Papa from 'papaparse'
+
 export default {
   name: 'index',
 
   components: { BigButton, RecentEntries, Upload },
 
-  methods: mapActions([
-    'rewind', 'accept', 'reject', 'ignore', 'jumpTo', 'startUploading'
-  ]),
+  methods: {
+    ...mapActions([
+      'rewind', 'accept', 'reject', 'ignore', 'jumpTo', 'startUploading'
+    ]),
+
+    download () {
+      const csv = Papa.unparse(this.exportData, {
+        delimiter: ',',
+        newlines: '\n',
+        header: true
+      })
+      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'})
+      FileSaver.saveAs(blob, 'ratings.csv')
+    }
+  },
 
   computed: {
     ...mapGetters([
@@ -94,7 +111,8 @@ export default {
       'canRewind',
       'isDone',
       'numDone',
-      'recentEntries'
+      'recentEntries',
+      'exportData'
     ]),
     ...mapState([
       'lastAction',
