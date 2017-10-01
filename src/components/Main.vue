@@ -10,7 +10,7 @@
           <q-card-title style="position: relative;">
             <center>
               <transition group mode="out-in" duration="150"
-                enterActiveClass="animated fadeIn"
+                enterActiveClass="animated"
                 :leaveActiveClass="animateClass">
                 <p class="entry" key="a" v-if="animateOddFrame && !isDone">
                   {{currentEntry}}
