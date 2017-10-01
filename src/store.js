@@ -43,19 +43,6 @@ export default new Vuex.Store({
     },
     hasData (state) {
       return state.entries && state.entries.length > 0
-    },
-    exportData (state) {
-      let results = []
-      for (let i = 0; i < state.pos; i++) {
-        const entry = state.entries[i]
-        if (entry.rating !== 0) {
-          results.push({
-            word: entry.entry,
-            rating: entry.rating
-          })
-        }
-      }
-      return results
     }
   },
 

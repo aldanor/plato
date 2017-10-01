@@ -131,7 +131,17 @@ export default {
     ]),
 
     download () {
-      const csv = Papa.unparse(this.exportData, {
+      let data = []
+      for (let i = 0; i < this.pos; i++) {
+        const entry = this.entries[i]
+        if (entry.rating !== 0) {
+          data.push({
+            word: entry.entry,
+            rating: entry.rating
+          })
+        }
+      }
+      const csv = Papa.unparse(data, {
         delimiter: ',',
         newlines: '\n',
         header: true
@@ -148,14 +158,14 @@ export default {
       'canRewind',
       'isDone',
       'numDone',
-      'recentEntries',
-      'exportData'
+      'recentEntries'
     ]),
     ...mapState([
       'lastAction',
       'counter',
       'pos',
-      'isUploading'
+      'isUploading',
+      'entries'
     ]),
 
     animateOddFrame () {
