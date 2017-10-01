@@ -71,6 +71,7 @@ export default {
     submit () {
       this.$store.dispatch('setEntries', this.selectedData)
       this.$store.dispatch('stopUploading')
+      this.reset()
     },
 
     cancel () {
