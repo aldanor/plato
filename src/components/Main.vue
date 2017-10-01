@@ -38,12 +38,16 @@
             <big-button icon="attachment" color="faded"
               :disabled="false" @click="startUploading" />
             <big-button icon="fast_rewind" color="faded"
+              v-shortkey="['b']" @shortkey.native="rewind()"
               :disabled="!canRewind" @click="rewind" />
             <big-button icon="thumb_up" color="positive"
+              v-shortkey="['a']" @shortkey.native="accept()"
               :disabled="isDone" @click="accept" />
             <big-button icon="thumb_down" color="negative"
+              v-shortkey="['s']" @shortkey.native="reject()"
               :disabled="isDone" @click="reject" />
             <big-button icon="fast_forward" color="faded"
+              v-shortkey="['x']" @shortkey.native="ignore()"
               :disabled="isDone" @click="ignore" />
             <big-button icon="file_download" color="faded"
               :disabled="false" @click="download" />

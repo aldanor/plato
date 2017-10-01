@@ -8,6 +8,7 @@ require(`quasar/dist/quasar.${__THEME}.css`)
 
 import Vue from 'vue'
 import router from './router'
+import VueShortKey from 'vue-shortkey'
 
 import Quasar, {
   QToolbar,
@@ -57,6 +58,7 @@ Vue.use(Quasar, {
     QSelect
   }
 })
+Vue.use(VueShortKey)
 import store from './store'
 
 if (__THEME === 'mat') {
