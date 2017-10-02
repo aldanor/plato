@@ -1,10 +1,6 @@
 <template>
   <q-card style="padding-top: 20px; margin-bottom: 0;">
     <q-card-main style="position: relative;">
-      <p v-if="data">
-        Total entries: {{numRows}}.
-      </p>
-
       <p v-if="init" class="text-faded justify-center">
         Give me some data!
       </p>
@@ -13,27 +9,48 @@
         Error: {{error}}.
       </p>
 
-      <p v-else-if="data && data.length > 1">
-        <q-checkbox right-label label="There's a header row" v-model="headerRow">
-        </q-checkbox>
-      </p>
+      <template v-else-if="data">
+        <div class="row md-gutter items-center">
+          <div class="col">
+              <q-select radio v-model="dataCol"
+                :options="colOptions" float-label="Column:">
+              </q-select>
+          </div>
+          <div class="col">
+            <template v-if="data.length > 1">
+              <q-toggle right-label label="Header row"
+                v-model="headerRow" @change="onHeaderChange">
+              </q-toggle>
+            </template>
+          </div>
+        </div>
 
-      <p v-if="data">
-        <q-select radio v-model="dataCol"
-          :options="colOptions" float-label="Extract words from this column">
-        </q-select>
-      </p>
+        <div class="row md-gutter">
+          <div class="col">
+            <q-input class="num-input" v-model="rangeFrom"
+              stack-label="Range: from" type="number" :max-decimals="0"
+              @change="rangeFromChange" @blur="rangeFromBlur" :min="1">
+            </q-input>
+          </div>
+          <div class="col">
+            <q-input class="num-input" v-model="rangeTo"
+              stack-label="Range: to" type="number" :max-decimals="0"
+              @change="rangeToChange" @blur="rangeToBlur" :max="numRows">
+            </q-input>
+          </div>
+        </div>
 
-      <p v-if="data">
-        <q-list>
-          <q-list-header>
-            Sample Entries
-          </q-list-header>
-          <q-item v-for="e, i in sample" :key="i">
-            <q-item-main>{{e}}</q-item-main>
-          </q-item>
-        </q-list>
-      </p>
+        <p>
+          <q-list>
+            <q-list-header>
+              Sample (out of {{numRows}})
+            </q-list-header>
+            <q-item v-for="e, i in sample" :key="i">
+              <q-item-main>{{e}}</q-item-main>
+            </q-item>
+          </q-list>
+        </p>
+      </template>
 
       <q-card-actions>
         <input type="file" id="file" name="file" accept=".csv" ref="file" />
@@ -59,11 +76,45 @@ export default {
       data: null,
       numCols: 0,
       headerRow: false,
-      dataCol: 0
+      dataCol: 0,
+      rangeFrom: 1,
+      rangeTo: 1
     }
   },
 
   methods: {
+    onHeaderChange () {
+      if (this.rangeTo > this.numRows) {
+        this.rangeTo = this.numRows
+      }
+    },
+
+    rangeFromBlur (event) {
+      if (!this.rangeFrom || this.rangeFrom < 1) {
+        this.rangeFrom = 1
+      }
+      else if (this.rangeFrom > this.rangeTo) {
+        this.rangeFrom = this.rangeTo
+      }
+    },
+
+    rangeFromChange (str) {
+      return (this.rangeFrom = parseInt(str))
+    },
+
+    rangeToBlur (event) {
+      if (!this.rangeTo || this.rangeTo > this.numRows) {
+        this.rangeTo = this.numRows
+      }
+      else if (this.rangeTo < this.rangeFrom) {
+        this.rangeTo = this.rangeFrom
+      }
+    },
+
+    rangeToChange (str) {
+      return (this.rangeTo = parseInt(str))
+    },
+
     reset () {
       Object.assign(this.$data, this.$options.data())
     },
@@ -82,7 +133,7 @@ export default {
       let words = []
       const col = this.dataCol
       const data = this.data
-      const offset = this.headerRow ? 1 : 0
+      const offset = (this.headerRow ? 1 : 0) + this.rangeFrom - 1
       let length = n + offset
       if (length > this.data.length) {
         length = this.data.length
@@ -102,7 +153,6 @@ export default {
         skipEmptyLines: true,
         delimiter: ','
       })
-      console.log(results)
 
       if (results.errors.length > 0) {
         let err = results.errors[0].message
@@ -116,6 +166,8 @@ export default {
       this.numCols = Math.min(...data.map(a => a.length))
       this.headerRow = false
       this.data = data
+      this.rangeToMin = this.rangeFrom = 1
+      this.rangeFromMax = this.rangeTo = this.numRows
     }
   },
 
@@ -146,11 +198,15 @@ export default {
     },
 
     selectedData () {
-      return this.getData(this.numRows)
+      return this.getData(this.rangeTo - this.rangeFrom + 1)
     },
 
     sample () {
-      return this.getData(4)
+      let n = this.rangeTo - this.rangeFrom + 1
+      if (n > 3 || isNaN(n)) {
+        n = 3
+      }
+      return this.getData(n)
     }
   },
 
@@ -169,5 +225,12 @@ export default {
 </script>
 
 <style scoped>
+.num-input > input[type="number"] {
+  -moz-appearance: textfield !important;
+}
+.num-input > input[type="number"]::-webkit-outer-spin-button,
+.num-input > input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
 </style>
-
