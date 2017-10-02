@@ -2,6 +2,8 @@
   <q-layout view="lHh Lpr fff">
     <q-toolbar slot="header">
       <q-toolbar-title>Plato</q-toolbar-title>
+      <q-btn flat icon="attachment" @click="startUploading"></q-btn>
+      <q-btn flat icon="file_download" @click="download"></q-btn>
     </q-toolbar>
 
     <div v-if="!isUploading" class="layout-padding row justify-center">
@@ -36,13 +38,6 @@
           <q-card-separator/>
           <q-card-actions align="center">
             <big-button
-              icon="attachment"
-              color="faded"
-              :disabled="false"
-              @click="startUploading">
-            </big-button>
-
-            <big-button
               icon="fast_rewind"
               color="faded"
               v-shortkey="{0: ['shift', 'space'], 1: ['b']}"
@@ -76,13 +71,6 @@
               @shortkey.native="ignore()"
               :disabled="isDone"
               @click="ignore">
-            </big-button>
-
-            <big-button
-              icon="file_download"
-              color="faded"
-              :disabled="false"
-              @click="download">
             </big-button>
           </q-card-actions>
         </q-card>
