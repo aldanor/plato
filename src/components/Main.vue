@@ -2,8 +2,10 @@
   <q-layout view="lHh Lpr fff">
     <q-toolbar slot="header">
       <q-toolbar-title>Plato</q-toolbar-title>
-      <q-btn flat icon="attachment" @click="startUploading"></q-btn>
-      <q-btn flat icon="file_download" @click="download"></q-btn>
+      <template v-if="!isUploading">
+        <q-btn flat icon="attachment" @click="startUploading"></q-btn>
+        <q-btn flat icon="file_download" @click="download"></q-btn>
+      </template>
     </q-toolbar>
 
     <div v-if="!isUploading" class="layout-padding row justify-center">
