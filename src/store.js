@@ -29,7 +29,10 @@ export default new Vuex.Store({
     canRewind (state) {
       return state.pos > 0
     },
-    currentEntry (state) {
+    currentEntry (state, getters) {
+      if (!getters.hasData) {
+        return ''
+      }
       return state.entries[state.pos].entry
     },
     numDone (state, getters) {
