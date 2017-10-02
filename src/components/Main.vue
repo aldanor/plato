@@ -134,10 +134,11 @@ export default {
       let data = []
       for (let i = 0; i < this.pos; i++) {
         const entry = this.entries[i]
-        if (entry.rating !== Rating.NONE) {
+        const rating = this.ratings[i]
+        if (rating !== Rating.NONE) {
           data.push({
             word: entry.entry,
-            rating: entry.rating === Rating.GOOD ? 1 : 0
+            rating: rating === Rating.GOOD ? 1 : 0
           })
         }
       }
@@ -165,7 +166,8 @@ export default {
       'counter',
       'pos',
       'isUploading',
-      'entries'
+      'entries',
+      'ratings'
     ]),
 
     animateOddFrame () {

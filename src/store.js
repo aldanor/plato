@@ -9,6 +9,7 @@ export default new Vuex.Store({
 
   state: {
     entries: [],
+    ratings: [],
     pos: 0,
     lastAction: null,
     counter: 0,
@@ -37,7 +38,8 @@ export default new Vuex.Store({
     recentEntries (state) {
       let entries = []
       for (let i = state.pos - 1; i > state.pos - 6 && i >= 0; i--) {
-        entries.push(state.entries[i])
+        const e = state.entries[i]
+        entries.push({entry: e.entry, index: e.index, rating: state.ratings[i]})
       }
       return entries
     },
@@ -53,11 +55,13 @@ export default new Vuex.Store({
       state.counter++
     },
     setEntries (state, entries) {
-      state.entries = entries.map((entry, index) => ({
-        entry: entry,
-        index: index,
-        rating: Rating.NONE
-      }))
+      state.entries = Object.freeze(
+        entries.map((entry, index) => Object.freeze({
+          entry: entry,
+          index: index
+        }))
+      )
+      state.ratings = Array.from({length: entries.length}, i => Rating.NONE)
       state.pos = 0
     },
     startUploading (state) {
@@ -72,19 +76,19 @@ export default new Vuex.Store({
       state.counter++
     },
     accept (state) {
-      state.entries[state.pos].rating = Rating.GOOD
+      state.ratings[state.pos] = Rating.GOOD
       state.pos++
       state.lastAction = Action.ACCEPT
       state.counter++
     },
     reject (state) {
-      state.entries[state.pos].rating = Rating.BAD
+      state.ratings[state.pos] = Rating.BAD
       state.pos++
       state.lastAction = Action.REJECT
       state.counter++
     },
     ignore (state) {
-      state.entries[state.pos].rating = Rating.NONE
+      state.ratings[state.pos] = Rating.NONE
       state.pos++
       state.lastAction = Action.IGNORE
       state.counter++
