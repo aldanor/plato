@@ -30,7 +30,9 @@ import Quasar, {
   QProgress,
   QAlert,
   QCheckbox,
-  QSelect
+  QSelect,
+  QToggle,
+  QInput
 } from 'quasar'
 
 Vue.config.productionTip = false
@@ -55,7 +57,9 @@ Vue.use(Quasar, {
     QProgress,
     QAlert,
     QCheckbox,
-    QSelect
+    QSelect,
+    QToggle,
+    QInput
   }
 })
 Vue.use(VueShortKey)
