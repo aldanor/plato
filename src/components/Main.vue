@@ -221,7 +221,7 @@ export default {
 }
 
 .animate-neutral {
-  color: #777;
+  color: #bbb;
 }
 
 .animate-positive {
