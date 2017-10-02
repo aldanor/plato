@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { Rating } from '../common'
 
 export default {
@@ -29,7 +29,7 @@ export default {
   computed: mapGetters(['recentEntries']),
 
   methods: {
-    ...mapActions(['jumpTo']),
+    ...mapMutations(['jumpTo']),
 
     mapRating (rating, values) {
       return {

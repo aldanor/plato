@@ -47,16 +47,9 @@ export default new Vuex.Store({
   },
 
   mutations: {
-    setRating (state, rating) {
-      state.entries[state.pos].rating = rating
-    },
     jumpTo (state, pos) {
       state.pos = pos
-    },
-    setLastAction (state, action) {
-      state.lastAction = action
-    },
-    increment (state) {
+      state.lastAction = Action.REWIND
       state.counter++
     },
     setEntries (state, entries) {
@@ -72,37 +65,47 @@ export default new Vuex.Store({
     },
     stopUploading (state) {
       state.isUploading = false
+    },
+    rewind (state) {
+      state.pos--
+      state.lastAction = Action.REWIND
+      state.counter++
+    },
+    accept (state) {
+      state.entries[state.pos].rating = Rating.GOOD
+      state.pos++
+      state.lastAction = Action.ACCEPT
+      state.counter++
+    },
+    reject (state) {
+      state.entries[state.pos].rating = Rating.BAD
+      state.pos++
+      state.lastAction = Action.REJECT
+      state.counter++
+    },
+    ignore (state) {
+      state.entries[state.pos].rating = Rating.NONE
+      state.pos++
+      state.lastAction = Action.IGNORE
+      state.counter++
     }
   },
 
   actions: {
     rewind (context) {
-      context.commit('jumpTo', context.state.pos - 1)
-      context.commit('setLastAction', Action.REWIND)
-      context.commit('increment')
+      context.commit('rewind')
     },
     accept (context) {
-      context.commit('setRating', Rating.GOOD)
-      context.commit('jumpTo', context.state.pos + 1)
-      context.commit('setLastAction', Action.ACCEPT)
-      context.commit('increment')
+      context.commit('accept')
     },
     reject (context) {
-      context.commit('setRating', Rating.BAD)
-      context.commit('jumpTo', context.state.pos + 1)
-      context.commit('setLastAction', Action.REJECT)
-      context.commit('increment')
+      context.commit('reject')
     },
     ignore (context) {
-      context.commit('setRating', Rating.NONE)
-      context.commit('jumpTo', context.state.pos + 1)
-      context.commit('setLastAction', Action.IGNORE)
-      context.commit('increment')
+      context.commit('ignore')
     },
     jumpTo (context, pos) {
       context.commit('jumpTo', pos)
-      context.commit('setLastAction', Action.REWIND)
-      context.commit('increment')
     },
     setEntries (context, entries) {
       context.commit('setEntries', entries)

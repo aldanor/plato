@@ -114,7 +114,7 @@ import BigButton from './BigButton.vue'
 import RecentEntries from './RecentEntries.vue'
 import Upload from './Upload.vue'
 
-import { mapState, mapActions, mapGetters } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 import { Action } from '../common'
 
 import FileSaver from 'file-saver'
@@ -126,7 +126,7 @@ export default {
   components: { BigButton, RecentEntries, Upload },
 
   methods: {
-    ...mapActions([
+    ...mapMutations([
       'rewind', 'accept', 'reject', 'ignore', 'jumpTo', 'startUploading'
     ]),
 
