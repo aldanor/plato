@@ -115,7 +115,7 @@ import RecentEntries from './RecentEntries.vue'
 import Upload from './Upload.vue'
 
 import { mapState, mapMutations, mapGetters } from 'vuex'
-import { Action } from '../common'
+import { Action, Rating } from '../common'
 
 import FileSaver from 'file-saver'
 import Papa from 'papaparse'
@@ -134,10 +134,10 @@ export default {
       let data = []
       for (let i = 0; i < this.pos; i++) {
         const entry = this.entries[i]
-        if (entry.rating !== 0) {
+        if (entry.rating !== Rating.NONE) {
           data.push({
             word: entry.entry,
-            rating: entry.rating
+            rating: entry.rating === Rating.GOOD ? 1 : 0
           })
         }
       }
