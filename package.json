@@ -1,8 +1,8 @@
 {
-  "name": "quasar-app",
+  "name": "plato",
   "version": "0.0.1",
-  "description": "A Quasar App",
-  "author": "Your Name",
+  "description": "Label them all!",
+  "author": "Ivan Smirnov",
   "scripts": {
     "clean": "node build/script.clean.js",
     "dev": "node build/script.dev.js",
