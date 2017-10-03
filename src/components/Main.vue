@@ -137,8 +137,24 @@ export default {
         newlines: '\n',
         header: true
       })
-      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'})
-      FileSaver.saveAs(blob, 'ratings.csv')
+
+      const mime = 'text/csv;charset=utf-8'
+      const filename = 'ratings.csv'
+      const isMobile = /(android|iphone|ipad)/i.test(navigator.userAgent || navigator.vendor)
+      if (isMobile) {
+        let uri = `data:${mime},` + encodeURI(csv)
+        let link = document.createElement('a')
+        link.setAttribute('href', uri)
+        link.setAttribute('download', filename)
+        link.setAttribute('target', '_blank')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }
+      else {
+        const blob = new File([csv], filename, {type: mime})
+        FileSaver.saveAs(blob)
+      }
     }
   },
 
